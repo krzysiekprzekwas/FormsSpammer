@@ -7,4 +7,6 @@ url = "https://docs.google.com/forms/d/e/1FAIpQLSf_wC3PzH3nd832UbQqnvcfT07DcWudR
 page = urllib2.urlopen(url)
 soup = BeautifulSoup(page, 'html.parser')
 
-print(soup)	
+name_box = soup.find('input', attrs={'name': 'fbzx'})
+	
+print("Form id: " + name_box['value'])
