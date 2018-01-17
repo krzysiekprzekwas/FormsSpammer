@@ -1,6 +1,10 @@
 import urllib
 import urllib.request as urllib2
 from bs4 import BeautifulSoup
+import re
+import pprint
+
+pp = pprint.PrettyPrinter(indent=4)
 
 # Test Google form
 url = "https://docs.google.com/forms/d/e/1FAIpQLSf_wC3PzH3nd832UbQqnvcfT07DcWudRalSQvDsVoJv4qGUuA/formResponse"
@@ -8,8 +12,14 @@ url = "https://docs.google.com/forms/d/e/1FAIpQLSf_wC3PzH3nd832UbQqnvcfT07DcWudR
 page = urllib2.urlopen(url)
 soup = BeautifulSoup(page, 'html.parser')
 name_box = soup.find('input', attrs={'name': 'fbzx'})
-	
+
+
+# Find form ID
 print("Form id: " + name_box['value'])
+
+# Find entry input fields
+input = soup.find_all('input', {'name': re.compile('entry.')})
+pp.pprint(input)
 
 # Hardcoded the data
 values= {
@@ -27,6 +37,7 @@ data = urllib.parse.urlencode(values).encode("utf-8")
 req = urllib2.Request(url, data)
 response = urllib2.urlopen(req)
 
+# Read the response
 html = response.read()
 
 soup = BeautifulSoup(html, 'html.parser')
