@@ -18,7 +18,7 @@ name_box = soup.find('input', attrs={'name': 'fbzx'})
 print("Form id: " + name_box['value'])
 
 # Find entry input fields
-input = soup.find_all('input', {'name': re.compile('entry.')})
+input = soup.find_all('input', {'name': re.compile('entry.[0-9]*$')})
 pp.pprint(list(map(lambda x : x['name'], input)))
 
 
