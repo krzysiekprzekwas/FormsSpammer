@@ -25,12 +25,14 @@ print("Input Fields parents")
 
 for tag in input:
     pp.pprint(tag['name'])
-
     opts = tag.parent.find_all("div", { "role" : "radio" })
     pp.pprint(list(map(lambda x : x['data-value'], opts)))
 
 # Hardcoded the data
 values= {
+'entry.1491116351_sentinel' : "",
+'entry.1491116351' : 'Opcja 2',
+'entry.1491116351' : 'Opcja 1',
 'entry.564186924':'Opcja 1',
 'entry.66323047':'Opcja 1',
 'fvv' : '1',
