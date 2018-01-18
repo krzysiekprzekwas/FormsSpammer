@@ -33,20 +33,22 @@ for tag in input:
 
 
 # Hardcoded the data
-values= {
-'entry.1491116351_sentinel' : "",
-'entry.1491116351' : 'Opcja 2',
-'entry.1491116351' : 'Opcja 1',
-'entry.564186924':'Opcja 1',
-'entry.66323047':'Opcja 1',
-'fvv' : '1',
-'draftResponse ': '[null,null, ' + name_box['value'] + ']',
-'pageHistory':'0',
-'fbzx': name_box['value']
-}
+values= [
+('entry.1491116351_sentinel', ""),
+('entry.1491116351' , 'Opcja 2'),
+('entry.1491116351' , 'Opcja 1'),
+('entry.564186924','Opcja 1'),
+('entry.66323047','Opcja 1'),
+('fvv' , '1'),
+('draftResponse ', '[null,null, ' + name_box['value'] + ']'),
+('pageHistory','0'),
+('fbzx', name_box['value'])
+]
 
 data = urllib.parse.urlencode(values).encode("utf-8")
-	
+
+print(data)
+
 # Send HTTP POST request
 req = urllib2.Request(url, data)
 response = urllib2.urlopen(req)
