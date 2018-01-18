@@ -21,12 +21,16 @@ print("Form id: " + name_box['value'])
 input = soup.find_all('input', {'name': re.compile('entry.')})
 pp.pprint(list(map(lambda x : x['name'], input)))
 
-print("Input Fields parents")
 
 for tag in input:
     pp.pprint(tag['name'])
     opts = tag.parent.find_all("div", { "role" : "radio" })
-    pp.pprint(list(map(lambda x : x['data-value'], opts)))
+    if opts:
+        pp.pprint(list(map(lambda x : x['data-value'], opts)))
+    else:
+        opts = tag.parent.find_all("div", { "role" : "checkbox" })
+        pp.pprint(list(map(lambda x : x['aria-label'], opts)))
+
 
 # Hardcoded the data
 values= {
