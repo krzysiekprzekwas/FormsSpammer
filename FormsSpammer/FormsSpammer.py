@@ -29,11 +29,17 @@ for tag in input:
         pp.pprint(list(map(lambda x : x['data-value'], opts)))
     else:
         opts = tag.parent.find_all("div", { "role" : "checkbox" })
-        pp.pprint(list(map(lambda x : x['aria-label'], opts)))
+        if opts:
+            pp.pprint(list(map(lambda x : x['aria-label'], opts)))
+        else:
+            opts = tag.parent.find_all("div", { "role" : "option" })
+            pp.pprint(list(map(lambda x : x['data-value'], opts)))
+
 
 
 # Hardcoded the data
 values= [
+('entry.507901454','Opcja 2'),
 ('entry.1491116351_sentinel', ""),
 ('entry.1491116351' , 'Opcja 2'),
 ('entry.1491116351' , 'Opcja 1'),
