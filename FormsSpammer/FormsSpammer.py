@@ -4,6 +4,19 @@ from bs4 import BeautifulSoup
 import re
 import pprint
 
+class Entry:
+
+   def __init__(self, name, answers):
+      self.name = name
+      self.answers = answers
+   
+   def __str__(self):
+      return self.name + " " + ''.join(str(a)+ " " for a in self.answers)
+
+   def __repr__(self):
+      return str(self)
+
+
 pp = pprint.PrettyPrinter(indent=4)
 
 # Test Google form
@@ -17,15 +30,23 @@ name_box = soup.find('input', attrs={'name': 'fbzx'})
 # Find form ID
 print("Form id: " + name_box['value'])
 
+entries = []
+
 # Find entry input fields
 input = soup.find_all('input', {'name': re.compile('entry.[0-9]*$')})
 #pp.pprint(list(map(lambda x : x['name'], input)))
 
 for tag in input:
-    pp.pprint("Found input: " + tag['name'])
     opts = tag.parent.find_all("div", { "role" : re.compile('radio$|checkbox|option') })
+    values = []
     for opt in opts:
-        pp.pprint(opt['aria-label']) if opt['role'] == "checkbox" else pp.pprint(opt['data-value'])
+        val = opt['aria-label'] if opt['role'] == "checkbox" else opt['data-value']
+        if val != "":
+            values.append(val)
+
+    entries.append(Entry(tag['name'],values))
+
+pp.pprint(entries)
 
 # Hardcoded the data
 values= [
