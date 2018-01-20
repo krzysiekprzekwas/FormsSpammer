@@ -3,6 +3,7 @@ import urllib.request as urllib2
 from bs4 import BeautifulSoup
 import re
 import pprint
+import random
 
 class Entry:
 
@@ -48,15 +49,11 @@ for tag in input:
 
 pp.pprint(entries)
 
-# Hardcoded the data
-values= [
-('entry.507901454','Opcja 2'),
-('entry.1491116351_sentinel', ""),
-('entry.1491116351' , 'Opcja 2'),
-('entry.1491116351' , 'Opcja 1'),
-('entry.564186924','Opcja 1'),
-('entry.66323047','Opcja 1'),
-('fvv' , '1'),
+values = []
+for entry in entries:
+    values.append((entry.name,random.choice(entry.answers)))
+
+values = values + [('fvv' , '1'),
 ('draftResponse ', '[null,null, ' + name_box['value'] + ']'),
 ('pageHistory','0'),
 ('fbzx', name_box['value'])
