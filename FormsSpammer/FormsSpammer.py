@@ -39,11 +39,11 @@ input = soup.find_all('input', {'name': re.compile('entry.[0-9]*$')})
 
 for tag in input:
     opts = tag.parent.find_all("div", { "role" : re.compile('radio$|checkbox|option') })
-    values = []
+    values = set()
     for opt in opts:
         val = opt['aria-label'] if opt['role'] == "checkbox" else opt['data-value']
         if val != "":
-            values.append(val)
+            values.add(val)
 
     entries.append(Entry(tag['name'],values))
 
@@ -51,7 +51,7 @@ pp.pprint(entries)
 
 values = []
 for entry in entries:
-    values.append((entry.name,random.choice(entry.answers)))
+    values.append((entry.name,random.choice(list(entry.answers))))
 
 values = values + [('fvv' , '1'),
 ('draftResponse ', '[null,null, ' + name_box['value'] + ']'),
