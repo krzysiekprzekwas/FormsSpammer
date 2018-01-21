@@ -43,7 +43,7 @@ for tag in input:
     for opt in opts:
         val = opt['aria-label'] if opt['role'] == "checkbox" else opt['data-value']
         if val != "":
-            values.add(val)
+            values.add(val.split(",")[-1].strip())
 
     entries.append(Entry(tag['name'],values))
 
@@ -58,6 +58,8 @@ values = values + [('fvv' , '1'),
 ('pageHistory','0'),
 ('fbzx', name_box['value'])
 ]
+
+pp.pprint(values)
 
 data = urllib.parse.urlencode(values).encode("utf-8")
 
