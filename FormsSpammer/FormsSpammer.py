@@ -73,9 +73,16 @@ def spam( count, url):
         name_box = soup.find('input', attrs={'name': 'fbzx'})
         print("\nForm id: " + name_box['value'])
         
+        # Choose random values for inputs
         values = []
         for entry in entries:
-            values.append((entry.name,random.choice(list(entry.answers))))
+            if entry.type == 'radio':
+                values.append((entry.name,random.choice(list(entry.answers))))
+            else:
+                samples = random.sample(entry.answers, random.randint(0, len(entry.answers)))
+
+                for a in samples:
+                    values.append((entry.name,a))
         
         values = values + [('fvv' , '1'),
         ('draftResponse ', '[null,null, ' + name_box['value'] + ']'),
@@ -101,4 +108,4 @@ def spam( count, url):
         soup = BeautifulSoup(html, 'html.parser')
         name_box = soup.find('input', attrs={'class': 'freebirdFormviewerViewResponseConfirmationMessage'})
 
-spam(25,"https://docs.google.com/forms/d/e/1FAIpQLSf_wC3PzH3nd832UbQqnvcfT07DcWudRalSQvDsVoJv4qGUuA/formResponse")
+spam(1,"https://docs.google.com/forms/d/e/1FAIpQLSf_wC3PzH3nd832UbQqnvcfT07DcWudRalSQvDsVoJv4qGUuA/formResponse")
