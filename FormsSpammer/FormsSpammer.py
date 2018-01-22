@@ -42,8 +42,14 @@ def spam( count, url):
                 val = opt['aria-label'] if opt['role'] == "checkbox" else opt['data-value']
                 if val != "":
                     values.add(val.split(",")[-1].strip())
-        
-            entries.append(Entry(tag['name'],values))
+            
+            if any(x.name == tag['name'] for x in entries):
+                for x in entries:
+                    if x.name == tag['name']:
+                        x.answers = x.answers.union(values)
+                        break
+            else:
+                entries.append(Entry(tag['name'],values))
         
         pp.pprint(entries)
         
@@ -74,4 +80,4 @@ def spam( count, url):
         name_box = soup.find('input', attrs={'class': 'freebirdFormviewerViewResponseConfirmationMessage'})
         #print(soup.prettify())
 
-spam(1000,"https://docs.google.com/forms/d/e/1FAIpQLSf_wC3PzH3nd832UbQqnvcfT07DcWudRalSQvDsVoJv4qGUuA/formResponse")
+spam(100,"https://docs.google.com/forms/d/e/1FAIpQLSf_wC3PzH3nd832UbQqnvcfT07DcWudRalSQvDsVoJv4qGUuA/formResponse")
