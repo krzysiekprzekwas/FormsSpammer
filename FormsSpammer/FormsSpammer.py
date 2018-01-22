@@ -6,12 +6,13 @@ import random
 
 class Entry:
 
-   def __init__(self, name, answers):
+   def __init__(self, name, type, answers):
       self.name = name
+      self.type = type
       self.answers = answers
    
    def __str__(self):
-      return self.name + " " + ''.join(str(a)+ " " for a in self.answers)
+      return self.name + " " + self.type + " " + ''.join(str(a)+ " " for a in self.answers)
 
    def __repr__(self):
       return str(self)
@@ -19,6 +20,45 @@ class Entry:
 def spam( count, url):
     # Initialize Pretty Printer
     pp = pprint.PrettyPrinter(indent=4)
+
+    # Open Google Forms 
+    # TO DO: Check if url really leads to Google forms
+    page = request.urlopen(url)
+    soup = BeautifulSoup(page, 'html.parser')
+
+    entries = []
+        
+    # Find entry input fields
+    input = soup.find_all('input', {'name': re.compile('entry.[0-9]*$')})
+    
+    # Find possible input values for coresponding entries
+    for tag in input:
+
+        opts = tag.parent.find_all("div", { "role" : re.compile('checkbox') })
+        type = 'checkbox'
+
+        if not opts:
+            opts = tag.parent.find_all("div", { "role" : re.compile('radio$|option') })
+            type = 'radio'
+
+        values = set()
+        for opt in opts:
+            val = opt['aria-label'] if opt['role'] == "checkbox" else opt['data-value']
+            if val != "":
+                values.add(val.split(",")[-1].strip())
+        
+        if any(x.name == tag['name'] for x in entries):
+            for x in entries:
+                if x.name == tag['name']:
+                    x.answers = x.answers.union(values)
+                    break
+        else:
+            entries.append(Entry(tag['name'],type, values))
+    
+    # Show found entries with values
+    print("\nFound these entries with values:")
+    pp.pprint(entries)
+        
 
     for x in range(1, count + 1):
 
@@ -32,32 +72,6 @@ def spam( count, url):
         # Find form ID
         name_box = soup.find('input', attrs={'name': 'fbzx'})
         print("\nForm id: " + name_box['value'])
-        
-        entries = []
-        
-        # Find entry input fields
-        input = soup.find_all('input', {'name': re.compile('entry.[0-9]*$')})
-        
-        # Find possible input values for coresponding entries
-        for tag in input:
-            opts = tag.parent.find_all("div", { "role" : re.compile('radio$|checkbox|option') })
-            values = set()
-            for opt in opts:
-                val = opt['aria-label'] if opt['role'] == "checkbox" else opt['data-value']
-                if val != "":
-                    values.add(val.split(",")[-1].strip())
-            
-            if any(x.name == tag['name'] for x in entries):
-                for x in entries:
-                    if x.name == tag['name']:
-                        x.answers = x.answers.union(values)
-                        break
-            else:
-                entries.append(Entry(tag['name'],values))
-        
-        # Show found entries with values
-        print("\nFound these entries with values:")
-        pp.pprint(entries)
         
         values = []
         for entry in entries:
@@ -87,4 +101,4 @@ def spam( count, url):
         soup = BeautifulSoup(html, 'html.parser')
         name_box = soup.find('input', attrs={'class': 'freebirdFormviewerViewResponseConfirmationMessage'})
 
-spam(2,"https://docs.google.com/forms/d/e/1FAIpQLSf_wC3PzH3nd832UbQqnvcfT07DcWudRalSQvDsVoJv4qGUuA/formResponse")
+spam(25,"https://docs.google.com/forms/d/e/1FAIpQLSf_wC3PzH3nd832UbQqnvcfT07DcWudRalSQvDsVoJv4qGUuA/formResponse")
