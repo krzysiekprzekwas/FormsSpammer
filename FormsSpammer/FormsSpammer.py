@@ -1,5 +1,4 @@
-import urllib
-import urllib.request as urllib2
+from urllib import request, parse
 from bs4 import BeautifulSoup
 import re
 import pprint
@@ -18,23 +17,28 @@ class Entry:
       return str(self)
 
 def spam( count, url):
+    # Initialize Pretty Printer
     pp = pprint.PrettyPrinter(indent=4)
-    for x in range(0, count):
-        	
-        page = urllib2.urlopen(url)
+
+    for x in range(1, count + 1):
+
+        print("\nForm number " + str(x) + " from " + str(count))
+
+        # Open Google Forms 
+        # TO DO: Check if url really leads to Google forms
+        page = request.urlopen(url)
         soup = BeautifulSoup(page, 'html.parser')
-        
         
         # Find form ID
         name_box = soup.find('input', attrs={'name': 'fbzx'})
-        print("Form id: " + name_box['value'])
+        print("\nForm id: " + name_box['value'])
         
         entries = []
         
         # Find entry input fields
         input = soup.find_all('input', {'name': re.compile('entry.[0-9]*$')})
-        #pp.pprint(list(map(lambda x : x['name'], input)))
         
+        # Find possible input values for coresponding entries
         for tag in input:
             opts = tag.parent.find_all("div", { "role" : re.compile('radio$|checkbox|option') })
             values = set()
@@ -51,6 +55,8 @@ def spam( count, url):
             else:
                 entries.append(Entry(tag['name'],values))
         
+        # Show found entries with values
+        print("\nFound these entries with values:")
         pp.pprint(entries)
         
         values = []
@@ -63,21 +69,22 @@ def spam( count, url):
         ('fbzx', name_box['value'])
         ]
         
+        print('\nValues to be sent to form:')
         pp.pprint(values)
         
-        data = urllib.parse.urlencode(values).encode("utf-8")
+        data = parse.urlencode(values).encode("utf-8")
         
-        print(data)
+        print("\nValues as url params:")
+        pp.pprint(data)
         
         # Send HTTP POST request
-        req = urllib2.Request(url, data)
-        response = urllib2.urlopen(req)
+        req = request.Request(url, data)
+        response = request.urlopen(req)
         
         # Read the response
+        # TO DO: Check if response was accepted
         html = response.read()
-        
         soup = BeautifulSoup(html, 'html.parser')
         name_box = soup.find('input', attrs={'class': 'freebirdFormviewerViewResponseConfirmationMessage'})
-        #print(soup.prettify())
 
-spam(100,"https://docs.google.com/forms/d/e/1FAIpQLSf_wC3PzH3nd832UbQqnvcfT07DcWudRalSQvDsVoJv4qGUuA/formResponse")
+spam(2,"https://docs.google.com/forms/d/e/1FAIpQLSf_wC3PzH3nd832UbQqnvcfT07DcWudRalSQvDsVoJv4qGUuA/formResponse")
