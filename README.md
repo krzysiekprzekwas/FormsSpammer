@@ -6,6 +6,26 @@ One of my colleagues at university created registration for event using Google F
 
 As I did't planned to share that code at first it may not be easiest to get it running, but as always I'm trying to keep amount of modules needed as small as I can. For now, whole project will be Visual Studio project to help resolve any problems with dependencies and allow me to possibly create some GUI in future.
 
+## Current Progress
+
+* What can it spam ? (1)
+  
+  - Only single page Google forms
+  - The following controls :
+    - single choice
+    - multiple choice
+    - menu style
+    - scale
+    - single choice matrix
+    - multiple choice matrix
+
+* What can it not spam?
+  
+  - Multi page forms
+  - Forms with set up background input veryfication
+  - Forms that require login (Duh!)
+  - A google form which has stuff not mentioned in (1)
+
 ### Prerequisites
 
 Whole project has been wrote in Python3 in mind. Only two non standard modules has been used, that is: urllib & BeautifulSoup. Please make sure that You have them installed on Your machine.
