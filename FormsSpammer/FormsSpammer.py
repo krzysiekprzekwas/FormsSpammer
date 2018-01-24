@@ -25,42 +25,59 @@ def spam( count, url):
     # TO DO: Check if url really leads to Google forms
     page = request.urlopen(url)
     soup = BeautifulSoup(page, 'html.parser')
-
+    
     entries = []
-
-    
-    submit = soup.find_all('div', {'class': 'freebirdFormviewerViewNavigationSubmitButton'})
-    
-    if not submit:
-        print("\nMulti page forms not supported!")
+    finalPage = False
+    while not finalPage:
+        name_box = soup.find('input', attrs={'name': 'fbzx'})
+        submit = soup.find_all('div', {'class': 'freebirdFormviewerViewNavigationSubmitButton'})
+        if submit:
+            finalPage = True
 
         
-    # Find entry input fields
-    input = soup.find_all('input', {'name': re.compile('entry.[0-9]*$')})
-    
-    # Find possible input values for coresponding entries
-    for tag in input:
-
-        opts = tag.parent.find_all("div", { "role" : re.compile('checkbox') })
-        type = 'checkbox'
-
-        if not opts:
-            opts = tag.parent.find_all("div", { "role" : re.compile('radio$|option') })
-            type = 'radio'
-
-        values = set()
-        for opt in opts:
-            val = opt['aria-label'] if opt['role'] == "checkbox" else opt['data-value']
-            if val != "":
-                values.add(val.split(",")[-1].strip())
+        # Find entry input fields
+        input = soup.find_all('input', {'name': re.compile('entry.[0-9]*$')})
         
-        if any(x.name == tag['name'] for x in entries):
-            for x in entries:
-                if x.name == tag['name']:
-                    x.answers = x.answers.union(values)
-                    break
-        else:
-            entries.append(Entry(tag['name'],type, values))
+        # Find possible input values for coresponding entries
+        for tag in input:
+
+            opts = tag.parent.find_all("div", { "role" : re.compile('checkbox') })
+            type = 'checkbox'
+
+            if not opts:
+                opts = tag.parent.find_all("div", { "role" : re.compile('radio$|option') })
+                type = 'radio'
+
+            values = set()
+            for opt in opts:
+                val = opt['aria-label'] if opt['role'] == "checkbox" else opt['data-value']
+                if val != "":
+                    values.add(val.split(",")[-1].strip())
+            
+            if any(x.name == tag['name'] for x in entries):
+                for x in entries:
+                    if x.name == tag['name']:
+                        x.answers = x.answers.union(values)
+                        break
+            else:
+                entries.append(Entry(tag['name'],type, values))
+
+            values = [('fvv' , '1'),
+                      ('draftResponse ', '[null,null, ' + name_box['value'] + ']'),
+                      ('pageHistory','0'),
+                      ('fbzx', name_box['value']),
+                      ('continue', '1')
+                      ]
+        
+            data = parse.urlencode(values).encode("utf-8")
+        
+            # Send HTTP POST request
+            req = request.Request(url, data)
+            response = request.urlopen(req)
+            
+            # Read the response
+            html = response.read()
+            soup = BeautifulSoup(html, 'html.parser')
     
     # Show found entries with values
     print("\nFound these entries with values:")
