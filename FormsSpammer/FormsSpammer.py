@@ -27,6 +27,13 @@ def spam( count, url):
     soup = BeautifulSoup(page, 'html.parser')
 
     entries = []
+
+    
+    submit = soup.find_all('div', {'class': 'freebirdFormviewerViewNavigationSubmitButton'})
+    
+    if not submit:
+        print("\nMulti page forms not supported!")
+
         
     # Find entry input fields
     input = soup.find_all('input', {'name': re.compile('entry.[0-9]*$')})
@@ -103,9 +110,11 @@ def spam( count, url):
         response = request.urlopen(req)
         
         # Read the response
-        # TO DO: Check if response was accepted
         html = response.read()
         soup = BeautifulSoup(html, 'html.parser')
         name_box = soup.find('input', attrs={'class': 'freebirdFormviewerViewResponseConfirmationMessage'})
+
+        if name_box:
+            print("Form sent")
 
 spam(1,"https://docs.google.com/forms/d/e/1FAIpQLSf_wC3PzH3nd832UbQqnvcfT07DcWudRalSQvDsVoJv4qGUuA/formResponse")
