@@ -3,7 +3,7 @@ from bs4 import BeautifulSoup
 import re
 import pprint
 import random
-
+from faker import Faker
 class Entry:
 
    def __init__(self, name, type, answers):
@@ -20,6 +20,7 @@ class Entry:
 def spam( count, url):
     # Initialize Pretty Printer
     pp = pprint.PrettyPrinter(indent=4)
+    fake = Faker()
 
     # Open Google Forms 
     # TO DO: Check if url really leads to Google forms
@@ -83,8 +84,10 @@ def spam( count, url):
         # Choose random values for inputs
         values = []
         for entry in entries:
-            if entry.type == 'radio':
+            if entry.type == 'radio' and len(entry.answers) != 0:
                 values.append((entry.name,random.choice(list(entry.answers))))
+            elif entry.type == 'radio' and len(entry.answers) == 0:
+                values.append((entry.name,fake.text(max_nb_chars=100, ext_word_list=None)))
             else:
                 samples = random.sample(entry.answers, random.randint(0, len(entry.answers)))
 
@@ -117,4 +120,4 @@ def spam( count, url):
         if name_box:
             print("Form sent")
 
-spam(1,"https://docs.google.com/forms/d/e/1FAIpQLSf_wC3PzH3nd832UbQqnvcfT07DcWudRalSQvDsVoJv4qGUuA/formResponse")
+spam(100,"https://docs.google.com/forms/d/e/1FAIpQLSf_wC3PzH3nd832UbQqnvcfT07DcWudRalSQvDsVoJv4qGUuA/formResponse")
