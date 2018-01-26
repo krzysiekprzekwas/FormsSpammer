@@ -6,13 +6,14 @@ import random
 from faker import Faker
 class Entry:
 
-   def __init__(self, name, type, answers):
-      self.name = name
+   def __init__(self, description, id, type, answers):
+      self.id = id
+      self.description = description
       self.type = type
       self.answers = answers
    
    def __str__(self):
-      return self.name + " " + self.type + " " + ''.join(str(a)+ " " for a in self.answers)
+      return self.description + " " + self.id + " " + self.type + " " + ''.join(str(a)+ " " for a in self.answers)
 
    def __repr__(self):
       return str(self)
@@ -49,19 +50,23 @@ def spam( count, url):
             opts = tag.parent.find_all("div", { "role" : re.compile('radio$|option') })
             type = 'radio'
 
+        # Find common anscestor and extract entry desciption
+        container =  tag.find_parent("div", { "role" : re.compile('listitem') })
+        description = container.find("div", { "role" : re.compile('heading') }).text
+
         values = set()
         for opt in opts:
             val = opt['aria-label'] if opt['role'] == "checkbox" else opt['data-value']
             if val != "":
                 values.add(val.split(",")[-1].strip())
         
-        if any(x.name == tag['name'] for x in entries):
+        if any(x.id == tag['name'] for x in entries):
             for x in entries:
-                if x.name == tag['name']:
+                if x.id == tag['name']:
                     x.answers = x.answers.union(values)
                     break
         else:
-            entries.append(Entry(tag['name'],type, values))
+            entries.append(Entry(description, tag['name'], type, values))
     
     # Show found entries with values
     print("\nFound these entries with values:")
@@ -85,14 +90,14 @@ def spam( count, url):
         values = []
         for entry in entries:
             if entry.type == 'radio' and len(entry.answers) != 0:
-                values.append((entry.name,random.choice(list(entry.answers))))
+                values.append((entry.id,random.choice(list(entry.answers))))
             elif entry.type == 'radio' and len(entry.answers) == 0:
-                values.append((entry.name,fake.text(max_nb_chars=100, ext_word_list=None)))
+                values.append((entry.id,fake.text(max_nb_chars=100, ext_word_list=None)))
             else:
                 samples = random.sample(entry.answers, random.randint(0, len(entry.answers)))
 
                 for a in samples:
-                    values.append((entry.name,a))
+                    values.append((entry.id,a))
         
         values = values + [('fvv' , '1'),
         ('draftResponse ', '[null,null, ' + name_box['value'] + ']'),
@@ -120,4 +125,4 @@ def spam( count, url):
         if name_box:
             print("Form sent")
 
-spam(100,"https://docs.google.com/forms/d/e/1FAIpQLSf_wC3PzH3nd832UbQqnvcfT07DcWudRalSQvDsVoJv4qGUuA/formResponse")
+spam(1,"https://docs.google.com/forms/d/e/1FAIpQLSf_wC3PzH3nd832UbQqnvcfT07DcWudRalSQvDsVoJv4qGUuA/formResponse")
