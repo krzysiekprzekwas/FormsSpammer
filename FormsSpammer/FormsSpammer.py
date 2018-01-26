@@ -28,15 +28,18 @@ def spam( count, url):
 
     # Open Google Forms 
     # TO DO: Check if url really leads to Google forms
-    page = request.urlopen(url).read()
+    page = request.urlopen(url)
     
     finish_time = datetime.datetime.now()
+
+    content = page.read()
+
     download_time = finish_time - base_time
     print("Download time:",download_time.microseconds * 10**-6,"seconds")
-    print("Page size:",len(page),"bytes")
-    print("Download speed: %.2f MB/s" % ((len(page)* 10**-6)/(download_time.microseconds * 10**-6)))
+    print("Page size:",len(content),"bytes")
+    print("Download speed: %.2f MB/s" % ((len(content)* 10**-6)/(download_time.microseconds * 10**-6)))
 
-    soup = BeautifulSoup(page, 'html.parser')
+    soup = BeautifulSoup(content, 'html.parser')
 
     entries = []
     
@@ -122,12 +125,22 @@ def spam( count, url):
         print("\nValues as url params:")
         pp.pprint(data)
         
-        # Send HTTP POST request
         req = request.Request(url, data)
+        base_time = datetime.datetime.now()
+        
+        # Send HTTP POST request
         response = request.urlopen(req)
+
+        finish_time = datetime.datetime.now()
+        html = response.read()
+    
+        upload_time = finish_time - base_time
+        print("Upload time:",upload_time.microseconds * 10**-6,"seconds")
+        print("Page size:",len(html),"bytes")
+        print("Upload speed: %.2f MB/s" % ((len(html)* 10**-6)/(upload_time.microseconds * 10**-6)))
         
         # Read the response
-        html = response.read()
+        
         soup = BeautifulSoup(html, 'html.parser')
         name_box = soup.find('input', attrs={'class': 'freebirdFormviewerViewResponseConfirmationMessage'})
 
