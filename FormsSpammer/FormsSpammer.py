@@ -88,6 +88,8 @@ def spam( count, url):
     for x in range(1, count + 1):
 
         print("\nForm number " + str(x) + " from " + str(count))
+        
+        start_time = datetime.datetime.now()
 
         # Open Google Forms 
         # TO DO: Check if url really leads to Google forms
@@ -135,16 +137,17 @@ def spam( count, url):
         html = response.read()
     
         upload_time = finish_time - base_time
+        process_time = finish_time - start_time
         print("Upload time:",upload_time.microseconds * 10**-6,"seconds")
         print("Page size:",len(html),"bytes")
         print("Upload speed: %.2f MB/s" % ((len(html)* 10**-6)/(upload_time.microseconds * 10**-6)))
         
         # Read the response
-        
         soup = BeautifulSoup(html, 'html.parser')
-        name_box = soup.find('input', attrs={'class': 'freebirdFormviewerViewResponseConfirmationMessage'})
+        name_box = soup.find('div', attrs={'class': 'freebirdFormviewerViewResponseConfirmationMessage'})
 
         if name_box:
             print("Form sent")
+            print(process_time *(count-x), "left to finish")
 
-spam(1,"https://docs.google.com/forms/d/e/1FAIpQLSf_wC3PzH3nd832UbQqnvcfT07DcWudRalSQvDsVoJv4qGUuA/formResponse")
+spam(4,"https://docs.google.com/forms/d/e/1FAIpQLSf_wC3PzH3nd832UbQqnvcfT07DcWudRalSQvDsVoJv4qGUuA/formResponse")
