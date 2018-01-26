@@ -1,5 +1,6 @@
 from urllib import request, parse
 from bs4 import BeautifulSoup
+import datetime
 import re
 import pprint
 import random
@@ -23,11 +24,17 @@ def spam( count, url):
     pp = pprint.PrettyPrinter(indent=4)
     fake = Faker()
 
+    base_time = datetime.datetime.now()
+
     # Open Google Forms 
     # TO DO: Check if url really leads to Google forms
     page = request.urlopen(url).read()
-
+    
+    finish_time = datetime.datetime.now()
+    download_time = finish_time - base_time
+    print("Download time:",download_time.microseconds * 10**-6,"seconds")
     print("Page size:",len(page),"bytes")
+    print("Download speed: %.2f MB/s" % ((len(page)* 10**-6)/(download_time.microseconds * 10**-6)))
 
     soup = BeautifulSoup(page, 'html.parser')
 
