@@ -25,11 +25,13 @@ def spam( count, url):
 
     # Open Google Forms 
     # TO DO: Check if url really leads to Google forms
-    page = request.urlopen(url)
+    page = request.urlopen(url).read()
+
+    print("Page size:",len(page),"bytes")
+
     soup = BeautifulSoup(page, 'html.parser')
 
     entries = []
-
     
     submit = soup.find_all('div', {'class': 'freebirdFormviewerViewNavigationSubmitButton'})
     
